@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Klub Robotik ITB</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+            animation: fadeIn 0.8s ease;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            animation: slideUp 0.8s ease;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #FFD700;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1a1a1a;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .file-name {
+            margin-bottom: 15px;
+            color: #FFD700;
+            font-size: 0.9em;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            color: #ff6b6b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .logout-btn {
+            background: rgba(255, 0, 0, 0.3);
+            border: 2px solid #ff0000;
+            color: #ff6b6b;
+            padding: 10px 20px;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.5);
+        }
+
+        .data-info {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .data-info h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">🤖</div>
+    <h1>Admin Panel</h1>
+    <p class="subtitle">Klub Robotik ITB Indonesia</p>
+
+    <div class="container">
+        <!-- Login Form -->
+        <div id="loginSection">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">👤 Username</label>
+                    <input type="text" id="username" placeholder="Masukkan username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">🔒 Password</label>
+                    <input type="password" id="password" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit">Login</button>
+                <div id="loginMessage"></div>
+            </form>
+        </div>
+
+        <!-- Upload Section (Hidden until login) -->
+        <div id="uploadSection" class="hidden">
+            <h2 style="color: #FFD700; margin-bottom: 20px; text-align: center;">Upload Data Peserta</h2>
+            
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+                <label for="fileInput" class="file-input-label">
+                    📁 Pilih File Excel
+                </label>
+            </div>
+            <div class="file-name" id="fileName"></div>
+            
+            <button id="uploadBtn" disabled>Upload Data</button>
+            
+            <div id="uploadMessage"></div>
+
+            <div id="dataInfo" class="hidden"></div>
+
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // Credentials (bisa diganti sesuai kebutuhan)
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'robotikITB2025';
+
+        let selectedFile = null;
+        let uploadedData = [];
+
+        // Check if already logged in
+        window.addEventListener('load', async () => {
+            const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+            if (isLoggedIn === 'true') {
+                showUploadSection();
+                await loadExistingData();
+            }
+        });
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                messageDiv.innerHTML = '<div class="message success">✅ Login berhasil!</div>';
+                
+                setTimeout(() => {
+                    showUploadSection();
+                    loadExistingData();
+                }, 1000);
+            } else {
+                messageDiv.innerHTML = '<div class="message error">❌ Username atau password salah!</div>';
+            }
+        });
+
+        function showUploadSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('uploadSection').classList.remove('hidden');
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('uploadSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginMessage').innerHTML = '';
+        }
+
+        // File Input Handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            selectedFile = e.target.files[0];
+            if (selectedFile) {
+                document.getElementById('fileName').textContent = `📄 ${selectedFile.name}`;
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        });
+
+        // Upload Button Handler
+        document.getElementById('uploadBtn').addEventListener('click', async function() {
+            if (!selectedFile) return;
+
+            const messageDiv = document.getElementById('uploadMessage');
+            messageDiv.innerHTML = '<div class="message">⏳ Mengupload data...</div>';
+
+            const reader = new FileReader();
+            
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    uploadedData = jsonData;
+
+                    // Save to storage
+                    await window.storage.set('recruitment_data', JSON.stringify(jsonData), true);
+                    
+                    messageDiv.innerHTML = `<div class="message success">✅ Data berhasil diupload! (${jsonData.length} peserta)</div>`;
+                    
+                    displayDataInfo(jsonData);
+                    
+                } catch (error) {
+                    messageDiv.innerHTML = '<div class="message error">❌ Gagal membaca file. Pastikan format Excel benar.</div>';
+                    console.error(error);
+                }
+            };
+
+            reader.readAsArrayBuffer(selectedFile);
+        });
+
+        async function loadExistingData() {
+            try {
+                const result = await window.storage.get('recruitment_data', true);
+                if (result && result.value) {
+                    uploadedData = JSON.parse(result.value);
+                    displayDataInfo(uploadedData);
+                }
+            } catch (error) {
+                console.log('No existing data found');
+            }
+        }
+
+        function displayDataInfo(data) {
+            const infoDiv = document.getElementById('dataInfo');
+            const diterima = data.filter(d => d.Status && d.Status.toLowerCase() === 'diterima').length;
+            const ditolak = data.filter(d => d.Status && d.Status.toLowerCase() === 'ditolak').length;
+
+            infoDiv.innerHTML = `
+                <h3>📊 Data Terupload</h3>
+                <div class="data-item">
+                    <span>Total Peserta:</span>
+                    <strong>${data.length}</strong>
+                </div>
+                <div class="data-item">
+                    <span style="color: #00ff00;">✅ Diterima:</span>
+                    <strong style="color: #00ff00;">${diterima}</strong>
+                </div>
+                <div class="data-item">
+                    <span style="color: #ff6b6b;">❌ Ditolak:</span>
+                    <strong style="color: #ff6b6b;">${ditolak}</strong>
+                </div>
+            `;
+            infoDiv.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
