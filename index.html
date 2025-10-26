@@ -254,28 +254,7 @@
 
     <!-- Load Firebase Config -->
     <script src="firebase.js"></script>
-    <script>
-    function formatWaktu(waktuStr) {
-        if (!waktuStr) return '-';
-    
-        // Jika Firebase nyimpan jam doang (misal "13:30"), langsung return jam itu
-        if (/^\d{1,2}:\d{2}$/.test(waktuStr)) {
-            return waktuStr + ' WIB';
-        }
-    
-        // Kalau Firebase nyimpan timestamp atau format ISO (misal "2025-10-26T13:00:00Z")
-        const date = new Date(waktuStr);
-        if (isNaN(date)) return waktuStr; // fallback kalau bukan format tanggal valid
-    
-        // Format ke jam WIB
-        return date.toLocaleTimeString('id-ID', {
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZone: 'Asia/Jakarta'
-        }) + ' WIB';
-    }
-    </script>
-
+   
     <script>
         document.getElementById('checkForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -327,16 +306,16 @@
                                 </p>
                                 
                                 <div class="info-item">
-                                    <span class="info-label">📅 Tanggal:</span>
-                                    <span>${applicant.Tanggal || '-'}</span>
+                                    <span class="info-label">📅 Tanggal: 28 Oktober 2025</span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">🕒 Waktu:</span>
-                                    <span>${formatWaktu(applicant.Waktu)}</span>
+                                    <span class="info-label">🕒 Waktu: 14:00 WIB</span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">📍 Tempat:</span>
-                                    <span>${applicant.Tempat || '-'}</span>
+                                    <span class="info-label">📍 Tempat: RA 323</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Pakaian: Hitam Putih</span>
                                 </div>
                                 
                                 <p style="margin-top: 25px; text-align: center; font-size: 0.9em; color: #ccc;">
