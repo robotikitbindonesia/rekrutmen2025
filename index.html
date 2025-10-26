@@ -251,23 +251,9 @@
         <p>"Dari nol, menjadi luar biasa lewat tangan dan logika sendiri." 🤖</p>
         <p style="margin-top: 10px;">© 2025 Klub Robotik ITB Indonesia</p>
     </div>
-
+<script src="firebase.js"></scripts>
     <script>
-        // TODO: GANTI DENGAN CONFIG FIREBASE ANDA
-        const firebaseConfig = {
-          apiKey: "AIzaSyA7Srz3fWUL4BrEkA2I6Ywsq2O9Ehhh7os",
-          authDomain: "rekrutmenrobotikitbi2025.firebaseapp.com",
-          databaseURL: "https://rekrutmenrobotikitbi2025-default-rtdb.asia-southeast1.firebasedatabase.app",
-          projectId: "rekrutmenrobotikitbi2025",
-          storageBucket: "rekrutmenrobotikitbi2025.firebasestorage.app",
-          messagingSenderId: "899366353919",
-          appId: "1:899366353919:web:7372240bf986b5724ac5ca",
-          measurementId: "G-6CHC1P48SF"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        
 
         document.getElementById('checkForm').addEventListener('submit', async function(e) {
             e.preventDefault();
