@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Klub Robotik ITB</title>
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -276,7 +276,7 @@
             </div>
             <div class="file-name" id="fileName"></div>
             
-            <button id="uploadBtn" disabled>Upload Data ke Firebase</button>
+            <button id="uploadBtn" disabled>Upload ke Firebase</button>
             
             <div id="uploadMessage"></div>
             <div id="dataInfo" class="hidden"></div>
@@ -284,9 +284,11 @@
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
     </div>
-    <script src="firebase.js"></scripts>
+
+    <!-- Load Firebase Config -->
+    <script src="firebase.js"></script>
+    
     <script>
-        
         const ADMIN_USERNAME = 'admin';
         const ADMIN_PASSWORD = 'robotikITB2025';
 
@@ -349,7 +351,7 @@
             const uploadBtn = document.getElementById('uploadBtn');
             
             uploadBtn.disabled = true;
-            messageDiv.innerHTML = '<div class="message">⏳ Mengupload data ke Firebase...</div>';
+            messageDiv.innerHTML = '<div class="message">⏳ Membaca file Excel...</div>';
 
             const reader = new FileReader();
             
@@ -360,8 +362,10 @@
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet);
                     
-                    // Upload ke Firebase
-                    const applicantsRef = database.ref('applicants');
+                    messageDiv.innerHTML = '<div class="message">☁️ Mengupload ke Firebase...</div>';
+                    
+                    // Upload ke Firebase (HANYA FIREBASE, TIDAK ADA localStorage)
+                    const applicantsRef = window.firebaseDb.ref('applicants');
                     
                     // Clear existing data
                     await applicantsRef.remove();
@@ -382,7 +386,7 @@
                     uploadBtn.disabled = false;
                     
                 } catch (error) {
-                    messageDiv.innerHTML = '<div class="message error">❌ Gagal mengupload data. ' + error.message + '</div>';
+                    messageDiv.innerHTML = '<div class="message error">❌ Gagal mengupload data: ' + error.message + '</div>';
                     console.error(error);
                     uploadBtn.disabled = false;
                 }
@@ -393,7 +397,7 @@
 
         async function loadExistingData() {
             try {
-                const snapshot = await database.ref('applicants').once('value');
+                const snapshot = await window.firebaseDb.ref('applicants').once('value');
                 const data = snapshot.val();
                 
                 if (data) {
@@ -401,7 +405,7 @@
                     displayDataInfo(dataArray);
                 }
             } catch (error) {
-                console.log('No existing data found');
+                console.log('Belum ada data di Firebase');
             }
         }
 
