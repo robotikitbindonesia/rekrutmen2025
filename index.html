@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cek Status Rekrutmen - Klub Robotik ITB</title>
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
@@ -251,21 +251,22 @@
         <p>"Dari nol, menjadi luar biasa lewat tangan dan logika sendiri." 🤖</p>
         <p style="margin-top: 10px;">© 2025 Klub Robotik ITB Indonesia</p>
     </div>
-<script src="firebase.js"></scripts>
-    <script>
-        
 
+    <!-- Load Firebase Config -->
+    <script src="firebase.js"></script>
+    
+    <script>
         document.getElementById('checkForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const nim = document.getElementById('nim').value.trim();
             const resultDiv = document.getElementById('result');
             
-            resultDiv.innerHTML = '<div class="loading">⏳ Mengecek status...</div>';
+            resultDiv.innerHTML = '<div class="loading">⏳ Mengecek status dari Firebase...</div>';
 
             try {
-                // Get data from Firebase
-                const snapshot = await database.ref('applicants/' + nim).once('value');
+                // Get data from Firebase (HANYA FIREBASE, TIDAK ADA localStorage)
+                const snapshot = await window.firebaseDb.ref('applicants/' + nim).once('value');
                 const applicant = snapshot.val();
 
                 if (!applicant) {
@@ -366,7 +367,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                resultDiv.innerHTML = '<div class="error">⚠️ Terjadi kesalahan. Silakan coba lagi atau hubungi admin.</div>';
+                resultDiv.innerHTML = '<div class="error">⚠️ Terjadi kesalahan saat menghubungi Firebase: ' + error.message + '</div>';
             }
         });
     </script>
