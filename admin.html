@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Klub Robotik ITB</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -115,6 +120,12 @@
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .file-input-wrapper {
@@ -239,7 +250,6 @@
     <p class="subtitle">Klub Robotik ITB Indonesia</p>
 
     <div class="container">
-        <!-- Login Form -->
         <div id="loginSection">
             <form id="loginForm">
                 <div class="form-group">
@@ -255,7 +265,6 @@
             </form>
         </div>
 
-        <!-- Upload Section (Hidden until login) -->
         <div id="uploadSection" class="hidden">
             <h2 style="color: #FFD700; margin-bottom: 20px; text-align: center;">Upload Data Peserta</h2>
             
@@ -267,10 +276,9 @@
             </div>
             <div class="file-name" id="fileName"></div>
             
-            <button id="uploadBtn" disabled>Upload Data</button>
+            <button id="uploadBtn" disabled>Upload Data ke Firebase</button>
             
             <div id="uploadMessage"></div>
-
             <div id="dataInfo" class="hidden"></div>
 
             <button class="logout-btn" onclick="logout()">Logout</button>
@@ -278,14 +286,27 @@
     </div>
 
     <script>
-        // Credentials (bisa diganti sesuai kebutuhan)
+        // TODO: GANTI DENGAN CONFIG FIREBASE ANDA
+        const firebaseConfig = {
+        apiKey: "AIzaSyALTBZ1-PB5ke_51NKlfQFA_wGLTEcifug",
+        authDomain: "robotik2025-75543.firebaseapp.com",
+        databaseURL: "https://robotik2025-75543-default-rtdb.firebaseio.com",
+        projectId: "robotik2025-75543",
+        storageBucket: "robotik2025-75543.firebasestorage.app",
+        messagingSenderId: "811280870450",
+        appId: "1:811280870450:web:7ef0cfc2cc5a0307db202b",
+        measurementId: "G-J31S5WHC3W"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         const ADMIN_USERNAME = 'admin';
         const ADMIN_PASSWORD = 'robotikITB2025';
 
         let selectedFile = null;
-        let uploadedData = [];
 
-        // Check if already logged in
         window.addEventListener('load', () => {
             const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
             if (isLoggedIn === 'true') {
@@ -294,7 +315,6 @@
             }
         });
 
-        // Login Form Handler
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -329,7 +349,6 @@
             document.getElementById('loginMessage').innerHTML = '';
         }
 
-        // File Input Handler
         document.getElementById('fileInput').addEventListener('change', function(e) {
             selectedFile = e.target.files[0];
             if (selectedFile) {
@@ -338,46 +357,63 @@
             }
         });
 
-        // Upload Button Handler
-        document.getElementById('uploadBtn').addEventListener('click', function() {
+        document.getElementById('uploadBtn').addEventListener('click', async function() {
             if (!selectedFile) return;
 
             const messageDiv = document.getElementById('uploadMessage');
-            messageDiv.innerHTML = '<div class="message">⏳ Mengupload data...</div>';
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            uploadBtn.disabled = true;
+            messageDiv.innerHTML = '<div class="message">⏳ Mengupload data ke Firebase...</div>';
 
             const reader = new FileReader();
             
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet);
                     
-                    uploadedData = jsonData;
-
-                    // Save to localStorage
-                    localStorage.setItem('recruitment_data', JSON.stringify(jsonData));
+                    // Upload ke Firebase
+                    const applicantsRef = database.ref('applicants');
                     
-                    messageDiv.innerHTML = `<div class="message success">✅ Data berhasil diupload! (${jsonData.length} peserta)</div>`;
+                    // Clear existing data
+                    await applicantsRef.remove();
                     
-                    displayDataInfo(jsonData);
+                    // Upload new data
+                    const updates = {};
+                    jsonData.forEach(applicant => {
+                        if (applicant.NIM) {
+                            updates[applicant.NIM] = applicant;
+                        }
+                    });
+                    
+                    await applicantsRef.update(updates);
+                    
+                    messageDiv.innerHTML = `<div class="message success">✅ Data berhasil diupload ke Firebase! (${jsonData.length} peserta)</div>`;
+                    
+                    await loadExistingData();
+                    uploadBtn.disabled = false;
                     
                 } catch (error) {
-                    messageDiv.innerHTML = '<div class="message error">❌ Gagal membaca file. Pastikan format Excel benar.</div>';
+                    messageDiv.innerHTML = '<div class="message error">❌ Gagal mengupload data. ' + error.message + '</div>';
                     console.error(error);
+                    uploadBtn.disabled = false;
                 }
             };
 
             reader.readAsArrayBuffer(selectedFile);
         });
 
-        function loadExistingData() {
+        async function loadExistingData() {
             try {
-                const data = localStorage.getItem('recruitment_data');
+                const snapshot = await database.ref('applicants').once('value');
+                const data = snapshot.val();
+                
                 if (data) {
-                    uploadedData = JSON.parse(data);
-                    displayDataInfo(uploadedData);
+                    const dataArray = Object.values(data);
+                    displayDataInfo(dataArray);
                 }
             } catch (error) {
                 console.log('No existing data found');
@@ -390,7 +426,7 @@
             const ditolak = data.filter(d => d.Status && d.Status.toLowerCase() === 'ditolak').length;
 
             infoDiv.innerHTML = `
-                <h3>📊 Data Terupload</h3>
+                <h3>📊 Data di Firebase</h3>
                 <div class="data-item">
                     <span>Total Peserta:</span>
                     <strong>${data.length}</strong>
