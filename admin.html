@@ -286,11 +286,11 @@
         let uploadedData = [];
 
         // Check if already logged in
-        window.addEventListener('load', async () => {
+        window.addEventListener('load', () => {
             const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
             if (isLoggedIn === 'true') {
                 showUploadSection();
-                await loadExistingData();
+                loadExistingData();
             }
         });
 
@@ -339,7 +339,7 @@
         });
 
         // Upload Button Handler
-        document.getElementById('uploadBtn').addEventListener('click', async function() {
+        document.getElementById('uploadBtn').addEventListener('click', function() {
             if (!selectedFile) return;
 
             const messageDiv = document.getElementById('uploadMessage');
@@ -347,7 +347,7 @@
 
             const reader = new FileReader();
             
-            reader.onload = async function(e) {
+            reader.onload = function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
@@ -356,8 +356,8 @@
                     
                     uploadedData = jsonData;
 
-                    // Save to storage
-                    await window.storage.set('recruitment_data', JSON.stringify(jsonData), true);
+                    // Save to localStorage
+                    localStorage.setItem('recruitment_data', JSON.stringify(jsonData));
                     
                     messageDiv.innerHTML = `<div class="message success">✅ Data berhasil diupload! (${jsonData.length} peserta)</div>`;
                     
@@ -372,11 +372,11 @@
             reader.readAsArrayBuffer(selectedFile);
         });
 
-        async function loadExistingData() {
+        function loadExistingData() {
             try {
-                const result = await window.storage.get('recruitment_data', true);
-                if (result && result.value) {
-                    uploadedData = JSON.parse(result.value);
+                const data = localStorage.getItem('recruitment_data');
+                if (data) {
+                    uploadedData = JSON.parse(data);
                     displayDataInfo(uploadedData);
                 }
             } catch (error) {
