@@ -248,7 +248,7 @@
     </div>
 
     <script>
-        document.getElementById('checkForm').addEventListener('submit', async function(e) {
+        document.getElementById('checkForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const nim = document.getElementById('nim').value.trim();
@@ -257,15 +257,15 @@
             resultDiv.innerHTML = '<div class="loading">⏳ Mengecek status...</div>';
 
             try {
-                // Get data from storage
-                const result = await window.storage.get('recruitment_data', true);
+                // Get data from localStorage
+                const data = localStorage.getItem('recruitment_data');
                 
-                if (!result || !result.value) {
+                if (!data) {
                     resultDiv.innerHTML = '<div class="error">⚠️ Data belum tersedia. Silakan hubungi admin.</div>';
                     return;
                 }
 
-                const applicantsData = JSON.parse(result.value);
+                const applicantsData = JSON.parse(data);
                 const applicant = applicantsData.find(a => String(a.NIM) === nim);
 
                 if (!applicant) {
