@@ -374,7 +374,7 @@
                     const updates = {};
                     jsonData.forEach(applicant => {
                         if (applicant.NIM) {
-                            updates[applicant.NIM] = applicant;
+                            updates[String(applicant.NIM)] = applicant;
                         }
                     });
                     
