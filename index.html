@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Status Rekrutmen - Klub Robotik ITB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #ccc;
+            font-size: 1.1em;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #FFD700;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #FFD700;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result.accepted {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 200, 0, 0.1) 100%);
+            border: 2px solid #00ff00;
+        }
+
+        .result.rejected {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(200, 0, 0, 0.1) 100%);
+            border: 2px solid #ff0000;
+        }
+
+        .result-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result.accepted .result-title {
+            color: #00ff00;
+        }
+
+        .result.rejected .result-title {
+            color: #ff0000;
+        }
+
+        .result-content {
+            line-height: 1.8;
+        }
+
+        .info-item {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-label {
+            color: #FFD700;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🤖</div>
+        <h1>Klub Robotik ITB Indonesia</h1>
+        <p class="subtitle">Open Recruitment 2025 - Cek Status Berkas</p>
+    </div>
+
+    <div class="container">
+        <form id="checkForm">
+            <div class="form-group">
+                <label for="nim">Masukkan NIM Anda</label>
+                <input type="text" id="nim" placeholder="Contoh: 23040058" required>
+            </div>
+            <button type="submit">Cek Status</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <div class="footer">
+        <p>"Dari nol, menjadi luar biasa lewat tangan dan logika sendiri." 🤖</p>
+        <p style="margin-top: 10px;">© 2025 Klub Robotik ITB Indonesia</p>
+    </div>
+
+    <script>
+        document.getElementById('checkForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nim = document.getElementById('nim').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '<div class="loading">⏳ Mengecek status...</div>';
+
+            try {
+                // Get data from storage
+                const result = await window.storage.get('recruitment_data', true);
+                
+                if (!result || !result.value) {
+                    resultDiv.innerHTML = '<div class="error">⚠️ Data belum tersedia. Silakan hubungi admin.</div>';
+                    return;
+                }
+
+                const applicantsData = JSON.parse(result.value);
+                const applicant = applicantsData.find(a => String(a.NIM) === nim);
+
+                if (!applicant) {
+                    resultDiv.innerHTML = '<div class="error">❌ NIM tidak ditemukan dalam database. Pastikan NIM Anda benar.</div>';
+                    return;
+                }
+
+                if (applicant.Status && applicant.Status.toLowerCase() === 'diterima') {
+                    resultDiv.innerHTML = `
+                        <div class="result accepted">
+                            <div class="result-title">✅ SELAMAT!</div>
+                            <div class="result-content">
+                                <p style="text-align: center; margin-bottom: 20px;">
+                                    Berkas pendaftaran Anda telah kami terima dan diverifikasi oleh sistem.
+                                </p>
+                                <p style="text-align: center; margin-bottom: 30px;">
+                                    Kami menilai bahwa Anda <strong>berpotensi</strong> untuk melanjutkan ke tahap wawancara.
+                                </p>
+                                
+                                <div class="info-item">
+                                    <span class="info-label">🧾 Nama:</span>
+                                    <span>${applicant.Nama}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">🆔 NIM:</span>
+                                    <span>${applicant.NIM}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">🏫 Prodi:</span>
+                                    <span>${applicant.Prodi}</span>
+                                </div>
+                                
+                                <hr style="margin: 25px 0; border: none; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                                
+                                <p style="text-align: center; margin-bottom: 20px; font-weight: bold; color: #FFD700;">
+                                    📅 JADWAL WAWANCARA
+                                </p>
+                                
+                                <div class="info-item">
+                                    <span class="info-label">📅 Tanggal:</span>
+                                    <span>${applicant.Tanggal || '-'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">🕒 Waktu:</span>
+                                    <span>${applicant.Waktu || '-'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">📍 Tempat:</span>
+                                    <span>${applicant.Tempat || '-'}</span>
+                                </div>
+                                
+                                <p style="margin-top: 25px; text-align: center; font-size: 0.9em; color: #ccc;">
+                                    <em>NB: Jangan lupa untuk hadir tepat waktu!</em>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result rejected">
+                            <div class="result-title">❌ MOHON MAAF</div>
+                            <div class="result-content">
+                                <p style="text-align: center; margin-bottom: 20px;">
+                                    Berkas pendaftaran Anda telah kami terima, namun setelah melalui proses verifikasi dan evaluasi:
+                                </p>
+                                <p style="text-align: center; margin-bottom: 30px; font-weight: bold;">
+                                    Kami menilai bahwa Anda <strong>belum dapat</strong> melanjutkan ke tahap wawancara dalam rangka Open Recruitment Klub Robotik 2025.
+                                </p>
+                                
+                                <div class="info-item">
+                                    <span class="info-label">🧾 Nama:</span>
+                                    <span>${applicant.Nama}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">🆔 NIM:</span>
+                                    <span>${applicant.NIM}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">🏫 Prodi:</span>
+                                    <span>${applicant.Prodi}</span>
+                                </div>
+                                
+                                <hr style="margin: 25px 0; border: none; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                                
+                                <p style="text-align: center; margin-top: 25px;">
+                                    Terima kasih atas antusiasme Anda untuk bergabung dengan Klub Robotik ITB Indonesia.
+                                </p>
+                                <p style="text-align: center; margin-top: 15px; color: #FFD700;">
+                                    <strong>Jangan menyerah! Anda dapat mencoba kembali di tahun depan.</strong> 💪
+                                </p>
+                                
+                                <p style="margin-top: 25px; text-align: center; font-size: 0.9em; color: #ccc;">
+                                    <em>NB: Pesan ini bersifat otomatis dan tidak dapat dibalas.</em>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = '<div class="error">⚠️ Terjadi kesalahan. Silakan coba lagi atau hubungi admin.</div>';
+            }
+        });
+    </script>
+</body>
+</html>
